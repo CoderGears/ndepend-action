@@ -88,7 +88,7 @@ const uploadResult = await artifactClient.uploadArtifact(artifactName, files, ro
 
 
     const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds3 ...`);
+    core.info(`Waiting ${ms} milliseconds5 ...`);
 
     core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
     await wait(parseInt(ms));
