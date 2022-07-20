@@ -21,7 +21,7 @@ const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 const workflowname=process.env.GITHUB_WORKFLOW;
 const workspace=process.env.GITHUB_WORKSPACE;
 core.info(workspace);
-core.info(`Waiting ${workflowname} milliseconds3 ...`);
+core.info(`Waiting ${workflowname} milliseconds5 ...`);
 
 // get license
 /*const { data } = await octokit.request("Get /repos/{owner}/ndepend2.github.io/contents/license", {
