@@ -72,8 +72,8 @@ const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/"+c
 fs.mkdirSync(NDependOut);
 //fs.writeFileSync(licenseFile, result.data);
 fs.writeFileSync(licenseFile, license);
-const lic=fs.readFileSync(licenseFile);
-core.info(lic);
+fs.writeFileSync(configFile, config);
+
 //'/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace
 await exec.exec(NDependParser, [ '/ndependProject',configFile, '/outputDirectory',NDependOut]);
 
