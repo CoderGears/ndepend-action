@@ -20,6 +20,8 @@ async function run() {
 const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 const workflowname=process.env.GITHUB_WORKFLOW;
 const workspace=process.env.GITHUB_WORKSPACE;
+//const license=process.env.NDependLicense;
+const license=core.getInput('NDependLicense');
 core.info(workspace);
 core.info(`Waiting ${workflowname} milliseconds5 ...`);
 
@@ -32,42 +34,47 @@ core.info(`Waiting ${workflowname} milliseconds5 ...`);
   
   
 });*/
-const  result  = await octokit.repos.getContent({
+/*const  result  = await octokit.repos.getContent({
   owner: owner,
   repo: 'ndepend2.github.io',
   path: 'license',
   headers: {
     'Accept': 'application/vnd.github.v3.raw'
   }
-})
+})*/
 // get branch name to use it in any request
 var branch=process.env.GITHUB_HEAD_REF;
+const configPath = core.getInput('NDependConfigFile');
 
 //get config
-const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/license", {
+const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/"+configPath, {
   owner,
   repo
   
 });
-
+  
 //get ndepend and extract it
-const node12Path = await tc.downloadTool('https://www.codergears.com/protected/NDependTask.zip');
-  const node12ExtractedFolder = await tc.extractZip(node12Path, _getTempDirectory()+'\\NDepend');
- const NDependParser=_getTempDirectory()+"\\NDepend\\NDependTask\\Integration\\VSTS\\VSTSAnalyzer.exe"
- const licenseFile=_getTempDirectory()+"\\NDepend\\NDependTask\\NDependProLicense.xml"
- const NDependOut=_getTempDirectory()+"\\NDependOut";
+ const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
+ const node12ExtractedFolder = await tc.extractZip(node12Path, _getTempDirectory()+'/NDepend');
+ const NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer.exe"
+ const licenseFile=_getTempDirectory()+"/NDepend/NDependGitHubActionProLicense.xml"
+ const configFile=_getTempDirectory()+"/NDepend/NDependConfig.ndproj"
+ 
+ const NDependOut=_getTempDirectory()+"/NDependOut";
 //add license file in ndepend install directory
 fs.mkdirSync(NDependOut);
-fs.writeFileSync(licenseFile, result.data);
+//fs.writeFileSync(licenseFile, result.data);
+fs.writeFileSync(licenseFile, license);
 const lic=fs.readFileSync(licenseFile);
 core.info(lic);
-await exec.exec(NDependParser, ['/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace]);
+//'/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace
+await exec.exec(NDependParser, [configFile,'/NDependOut',NDependOut]);
 
 const artifactClient = artifact.create()
 const artifactName = 'ndepend';
 
 var files=[];
-const rootDirectory = NDependOut+"\\NDepend\\Issues";
+const rootDirectory = NDependOut;
 fs.readdirSync(rootDirectory).forEach(file => {
   var fullPath = path.join(rootDirectory, file);
  files.push(fullPath);
