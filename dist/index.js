@@ -54,6 +54,7 @@ var branch=process.env.GITHUB_HEAD_REF;
 const configPath = core.getInput('NDependConfigFile');
 core.info(configPath);
 //get config
+core.info("/repos/{owner}/{repo}/contents/"+configPath);
 const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/"+configPath, {
   owner,
   repo
