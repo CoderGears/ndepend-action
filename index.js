@@ -50,6 +50,9 @@ core.info(configPath);
 //get config
 
 const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/{configPath}", {
+  headers: {
+    accept: 'application/vnd.github.VERSION.raw',
+  },
   owner,
   repo,
   configPath
