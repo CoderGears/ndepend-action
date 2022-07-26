@@ -52,7 +52,8 @@ const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/"+c
   repo
   
 });
-  
+core.info(config);
+
 //get ndepend and extract it
  const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
  const node12ExtractedFolder = await tc.extractZip(node12Path, _getTempDirectory()+'/NDepend');
