@@ -54,13 +54,14 @@ var branch=process.env.GITHUB_HEAD_REF;
 const configPath = core.getInput('NDependConfigFile');
 core.info(configPath);
 //get config
-core.info("/repos/{owner}/{repo}/contents/"+configPath);
-const { config } = await octokit.request("Get /repos/"+owner+"/"+repo+"/contents/"+configPath, {
+
+const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/{configPath}", {
   owner,
-  repo
+  repo,
+  configPath
   
 });
-core.info(config);
+core.info(config.content);
 
 //get ndepend and extract it
  const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
