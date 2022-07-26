@@ -75,7 +75,7 @@ fs.writeFileSync(licenseFile, license);
 const lic=fs.readFileSync(licenseFile);
 core.info(lic);
 //'/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace
-await exec.exec(NDependParser, [configFile,'/NDependOut',NDependOut]);
+await exec.exec(NDependParser, [configFile,'/OutDir',NDependOut]);
 
 const artifactClient = artifact.create()
 const artifactName = 'ndepend';
