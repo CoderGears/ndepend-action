@@ -49,13 +49,12 @@ const configPath = core.getInput('NDependConfigFile');
 core.info(configPath);
 //get config
 
-const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/{configPath}", {
+const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/NDependConfigFile.ndproj", {
   headers: {
     accept: 'application/vnd.github.VERSION.raw',
   },
   owner,
-  repo,
-  configPath
+  repo
   
 });
 core.info(config);
