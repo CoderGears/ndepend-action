@@ -56,7 +56,7 @@ const configPath = core.getInput('NDependConfigFile');
 core.info(configPath);
 //get config
 
-const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/NDependConfigFile.ndproj", {
+const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/license", {
   headers: {
     accept: 'application/vnd.github.VERSION.raw',
   },
