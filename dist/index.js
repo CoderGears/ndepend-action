@@ -63,9 +63,9 @@ const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/"+c
 //get ndepend and extract it
  const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
  const node12ExtractedFolder = await tc.extractZip(node12Path, _getTempDirectory()+'/NDepend');
- const NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer.exe"
- const licenseFile=_getTempDirectory()+"/NDepend/NDependGitHubActionProLicense.xml"
- const configFile=_getTempDirectory()+"/NDepend/NDependConfig.ndproj"
+ const NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe"
+ const licenseFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependGitHubActionProLicense.xml"
+ const configFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependConfig.ndproj"
  
  const NDependOut=_getTempDirectory()+"/NDependOut";
 //add license file in ndepend install directory
