@@ -29,8 +29,9 @@ const workflowname=process.env.GITHUB_WORKFLOW;
 const workspace=process.env.GITHUB_WORKSPACE;
 //const license=process.env.NDependLicense;
 const license=core.getInput('NDependLicense');
-core.info(workspace);
-core.info(`Waiting ${workflowname} milliseconds5 ...`);
+core.info(owner);
+
+core.info(repo);
 
 // get license
 /*const { data } = await octokit.request("Get /repos/{owner}/ndepend2.github.io/contents/license", {
@@ -61,7 +62,7 @@ const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/{co
   configPath
   
 });
-core.info(config.content);
+core.info(config);
 
 //get ndepend and extract it
  const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
