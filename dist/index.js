@@ -42,28 +42,29 @@ core.info(repo);
   
   
 });*/
-/*const  result  = await octokit.repos.getContent({
+const configPath = core.getInput('NDependConfigFile');
+
+const  config  = await octokit.repos.getContent({
   owner: owner,
-  repo: 'ndepend2.github.io',
-  path: 'license',
+  repo: repo,
+  path: configPath,
   headers: {
     'Accept': 'application/vnd.github.v3.raw'
   }
-})*/
+})
 // get branch name to use it in any request
 var branch=process.env.GITHUB_HEAD_REF;
-const configPath = core.getInput('NDependConfigFile');
 core.info(configPath);
 //get config
 
-const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/license", {
+/*const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/license", {
   headers: {
     accept: 'application/vnd.github.VERSION.raw',
   },
   owner,
   repo
   
-});
+});*/
 core.info(config);
 
 //get ndepend and extract it
