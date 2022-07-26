@@ -52,7 +52,7 @@ core.info(`Waiting ${workflowname} milliseconds5 ...`);
 // get branch name to use it in any request
 var branch=process.env.GITHUB_HEAD_REF;
 const configPath = core.getInput('NDependConfigFile');
-
+core.info(configPath);
 //get config
 const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/"+configPath, {
   owner,
