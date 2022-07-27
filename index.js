@@ -72,7 +72,7 @@ core.info(config);
 fs.mkdirSync(NDependOut);
 //fs.writeFileSync(licenseFile, result.data);
 fs.writeFileSync(licenseFile, license);
-fs.writeFileSync(configFile, config.content);
+fs.writeFileSync(configFile, config.data);
 
 //'/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace
 await exec.exec(NDependParser, [ '/ndependProject',configFile, '/outputDirectory',NDependOut]);
