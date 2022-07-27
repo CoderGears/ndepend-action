@@ -43,7 +43,9 @@ const license=core.getInput('NDependLicense');
 core.info(owner);
 
 core.info(repo);
-
+var branch=process.env.GITHUB_HEAD_REF;
+const rooturl=$GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/blob"+process.env.GITHUB_HEAD_REF;
+core.info(rooturl);
 // get license
 /*const { data } = await octokit.request("Get /repos/{owner}/ndepend2.github.io/contents/license", {
   headers: {
@@ -64,7 +66,7 @@ const configPath = core.getInput('NDependConfigFile');
   }
 })*/
 // get branch name to use it in any request
-var branch=process.env.GITHUB_HEAD_REF;
+
 //core.info(configPath);
 //get config
 
