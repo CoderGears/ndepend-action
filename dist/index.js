@@ -14,7 +14,18 @@ const artifact = __nccwpck_require__(2605);
 
 fs = __nccwpck_require__(5747);
 path = __nccwpck_require__(5622);
-
+const artactFiles=[];
+function traverseDir(dir) {
+  fs.readdirSync(dir).forEach(file => {
+    let fullPath = path.join(dir, file);
+    if (fs.lstatSync(fullPath).isDirectory()) {
+       
+       traverseDir(fullPath);
+     } else {
+      artactFiles.push(fullPath);
+     }  
+  });
+}
 function _getTempDirectory() {
   const tempDirectory = process.env['RUNNER_TEMP'] ;
   return tempDirectory;
@@ -89,16 +100,17 @@ const artifactName = 'ndepend';
 
 var files=[];
 const rootDirectory = NDependOut;
-fs.readdirSync(rootDirectory).forEach(file => {
+/*fs.readdirSync(rootDirectory).forEach(file => {
   var fullPath = path.join(rootDirectory, file);
- files.push(fullPath);
-});
+  files.push(fullPath);
+});*/
+traverseDir(NDependOut);
 
 const options = {
     continueOnError: true
 }
 
-const uploadResult = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+const uploadResult = await artifactClient.uploadArtifact(artifactName, artactFiles, rootDirectory, options)
 //get sln file
 //get baseline build id
 //get baseline ndar if exists from a specific build
