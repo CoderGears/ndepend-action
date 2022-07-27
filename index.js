@@ -37,17 +37,17 @@ core.info(repo);
 });*/
 const configPath = core.getInput('NDependConfigFile');
 
-const  config  = await octokit.repos.getContent({
+/*const  config  = await octokit.repos.getContent({
   owner: owner,
   repo: repo,
   path: configPath,
   headers: {
     'Accept': 'application/vnd.github.v3.raw'
   }
-})
+})*/
 // get branch name to use it in any request
 var branch=process.env.GITHUB_HEAD_REF;
-core.info(configPath);
+//core.info(configPath);
 //get config
 
 /*const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/license", {
@@ -58,7 +58,7 @@ core.info(configPath);
   repo
   
 });*/
-core.info(config);
+//core.info(config);
 
 //get ndepend and extract it
  const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
@@ -75,7 +75,7 @@ fs.writeFileSync(licenseFile, license);
 fs.writeFileSync(configFile, config.data);
 
 //'/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace
-await exec.exec(NDependParser, [ '/ndependProject',configFile, '/outputDirectory',NDependOut]);
+await exec.exec(NDependParser, [ '/ndependProject',workspace+"/"+configPath, '/outputDirectory',NDependOut]);
 
 const artifactClient = artifact.create()
 const artifactName = 'ndepend';
