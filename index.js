@@ -72,7 +72,7 @@ var branch=process.env.GITHUB_HEAD_REF;
 fs.mkdirSync(NDependOut);
 //fs.writeFileSync(licenseFile, result.data);
 fs.writeFileSync(licenseFile, license);
-fs.writeFileSync(configFile, config.data);
+//fs.writeFileSync(configFile, config.data);
 
 //'/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace
 await exec.exec(NDependParser, [ '/ndependProject',workspace+"/"+configPath, '/outputDirectory',NDependOut]);
