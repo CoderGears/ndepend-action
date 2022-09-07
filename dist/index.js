@@ -83,10 +83,11 @@ const { runs } = await octokit.request("Get /repos/{owner}/{repo}/action/runs", 
   repo
   
 });
-runs.workflow_runs.forEach(run => {
-  core.info(run.run_number);
-});
-//core.info(config);
+
+//runs.workflow_runs.forEach(run => {
+ // core.info(run.run_number);
+//});
+core.info(runs);
 
 //get ndepend and extract it
  const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
