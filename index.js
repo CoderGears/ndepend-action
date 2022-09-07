@@ -68,7 +68,7 @@ const configPath = core.getInput('NDependConfigFile');
 //get specific run artifacts /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts
 //download ndar   /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}
 //curl -H "Accept: application/vnd.github+json" -H "Authorization: Bearer token" https://api.github.com/repos/OWNER/REPO/actions/artifacts/ARTIFACT_ID/zip -o file
-const { runs } = await octokit.request("Get /repos/{owner}/{repo}/action/runs", {
+const { runs } = await octokit.request("Get /repos/{owner}/{repo}/actions/runs", {
   headers: {
     accept: 'application/vnd.github.VERSION.raw',
   },
