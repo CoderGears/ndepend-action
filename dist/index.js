@@ -39,6 +39,7 @@ const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 const workflowname=process.env.GITHUB_WORKFLOW;
 const workspace=process.env.GITHUB_WORKSPACE;
 //const license=process.env.NDependLicense;
+const token=process.env.GITHUB_TOKEN;
 const license=core.getInput('NDependLicense');
 core.info(owner);
 
@@ -69,15 +70,22 @@ const configPath = core.getInput('NDependConfigFile');
 
 //core.info(configPath);
 //get config
-
-/*const { config } = await octokit.request("Get /repos/{owner}/{repo}/contents/license", {
+// get all runs /repos/{owner}/{repo}/actions/runs
+// find run id from run number or get latest
+//get specific run artifacts /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts
+//download ndar   /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}
+//curl -H "Accept: application/vnd.github+json" -H "Authorization: Bearer token" https://api.github.com/repos/OWNER/REPO/actions/artifacts/ARTIFACT_ID/zip -o file
+const { runs } = await octokit.request("Get /repos/{owner}/{repo}/action/runs", {
   headers: {
     accept: 'application/vnd.github.VERSION.raw',
   },
   owner,
   repo
   
-});*/
+});
+runs.workflow_runs.forEach(run => {
+  core.info(run.run_number);
+});
 //core.info(config);
 
 //get ndepend and extract it
