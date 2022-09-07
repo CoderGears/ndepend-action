@@ -84,10 +84,10 @@ const configPath = core.getInput('NDependConfigFile');
   
 });
 
-//runs.workflow_runs.forEach(run => {
-//  core.info(run.run_number);
-//});
-core.info(runs.data);
+runs.data.workflow_runs.forEach(run => {
+  core.info(run.run_number);
+});
+
 
 //get ndepend and extract it
  const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
