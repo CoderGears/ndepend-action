@@ -92,10 +92,10 @@ fs.writeFileSync(licenseFile, license);
   repo
   
 });
-for (const run in runs.data.workflow_runs) {
-  
-core.info(JSON.stringify(run));
-  if(run.run_number==baseline)
+for (const runkey in runs.data.workflow_runs) {
+  const run=runs.data.workflow_runs[runkey];
+
+  if(run.run_number.toString()==baseline)
   {
     core.info("run found");
     const runid=run.id;
@@ -104,8 +104,8 @@ core.info(JSON.stringify(run));
       repo,
       runid
     });
-    for (const artifact in artifacts.data.artifacts) {
-
+    for (const artifactKey in artifacts.data.artifacts) {
+      const artifact=artifacts.data.artifacts[artifactKey];
       if(artifact.name=="NDepend")
       {
         core.info("artifact found");
