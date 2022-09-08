@@ -101,7 +101,7 @@ fs.writeFileSync(licenseFile, license);
 });
 for (const run in runs.data.workflow_runs) {
   
-core.info(run.run_number);
+core.info(JSON.stringify(run));
   if(run.run_number==baseline)
   {
     core.info("run found");
