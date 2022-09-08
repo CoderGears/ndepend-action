@@ -104,16 +104,16 @@ for (const runkey in runs.data.workflow_runs) {
 
   if(run.run_number.toString()==baseline)
   {
-    core.info("run found");
+    core.info("run found:"+run.id);
     const runid=run.id;
-    const artifacts  = await octokit.request("Get /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts", {
+    const artifacts  = await octokit.request("Get /repos/{owner}/{repo}/actions/runs/{runid}/artifacts", {
       owner,
       repo,
       runid
     });
     for (const artifactKey in artifacts.data.artifacts) {
       const artifact=artifacts.data.artifacts[artifactKey];
-      if(artifact.name=="NDepend")
+      if(artifact.name=="ndepend")
       {
         core.info("artifact found");
   
