@@ -37,6 +37,7 @@ const workspace=process.env.GITHUB_WORKSPACE;
 //const license=process.env.NDependLicense;
 const token=process.env.GITHUB_TOKEN;
 const license=core.getInput('NDependLicense');
+const baseline=core.getInput('Baseline');
 core.info(owner);
 
 core.info(repo);
@@ -53,6 +54,21 @@ core.info(rooturl);
   
 });*/
 const configPath = core.getInput('NDependConfigFile');
+//get ndepend and extract it
+const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
+const node12ExtractedFolder = await tc.extractZip(node12Path, _getTempDirectory()+'/NDepend');
+const NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe"
+const licenseFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependGitHubActionProLicense.xml"
+const configFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependConfig.ndproj"
+
+const NDependOut=_getTempDirectory()+"/NDependOut";
+const NDependBaseline=_getTempDirectory()+"/baseline.zip";
+
+//add license file in ndepend install directory
+fs.mkdirSync(NDependOut);
+//fs.writeFileSync(licenseFile, result.data);
+fs.writeFileSync(licenseFile, license);
+//fs.writeFileSync(configFile, config.data);
 
 /*const  config  = await octokit.repos.getContent({
   owner: owner,
@@ -76,25 +92,40 @@ const configPath = core.getInput('NDependConfigFile');
   repo
   
 });
+for (const run in runs.data.workflow_runs) {
+  
 
-runs.data.workflow_runs.forEach(run => {
-  core.info(run.run_number);
-});
+  if(run.run_number.toString()==baseline)
+  {
+    core.info("run found");
+    const runid=run.id;
+    const artifacts  = await octokit.request("Get /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts", {
+      owner,
+      repo,
+      runid
+    });
+    for (const artifact in artifacts.data.artifacts) {
+
+      if(artifact.name=="NDepend")
+      {
+        core.info("artifact found");
+  
+        var artifactId=artifact.id;
+        response  = await octokit.request("Get /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/zip", {
+          owner,
+          repo,
+          artifactId
+        });
+        //write data in file
+        fs.writeFileSync(NDependBaseline, response.data,  "binary",function(err) { });
+       
+      }
+    };
+    
+  }
+};
 
 
-//get ndepend and extract it
- const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
- const node12ExtractedFolder = await tc.extractZip(node12Path, _getTempDirectory()+'/NDepend');
- const NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe"
- const licenseFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependGitHubActionProLicense.xml"
- const configFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependConfig.ndproj"
- 
- const NDependOut=_getTempDirectory()+"/NDependOut";
-//add license file in ndepend install directory
-fs.mkdirSync(NDependOut);
-//fs.writeFileSync(licenseFile, result.data);
-fs.writeFileSync(licenseFile, license);
-//fs.writeFileSync(configFile, config.data);
 
 //'/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace
 await exec.exec(NDependParser, [ '/ndependProject',workspace+"/"+configPath, '/outputDirectory',NDependOut]);
