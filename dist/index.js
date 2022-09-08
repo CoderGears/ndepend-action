@@ -101,8 +101,8 @@ fs.writeFileSync(licenseFile, license);
 });
 for (const run in runs.data.workflow_runs) {
   
-
-  if(run.run_number.toString()==baseline)
+core.info(run.run_number);
+  if(run.run_number==baseline)
   {
     core.info("run found");
     const runid=run.id;
