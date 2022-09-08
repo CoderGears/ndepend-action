@@ -111,13 +111,14 @@ for (const runkey in runs.data.workflow_runs) {
         core.info("artifact found");
   
         var artifactId=artifact.id;
-        response  = await octokit.request("Get /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/zip", {
+        response  = await octokit.request("Get /repos/{owner}/{repo}/actions/artifacts/{artifactid}/zip", {
           owner,
           repo,
           artifactId
         });
         //write data in file
         fs.writeFileSync(NDependBaseline, response.data,  "binary",function(err) { });
+        const baselineExtractedFolder = await tc.extractZip(NDependBaseline, _getTempDirectory()+'/NDependBaseLine');
        
       }
     };
