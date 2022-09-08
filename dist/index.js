@@ -124,7 +124,7 @@ for (const runkey in runs.data.workflow_runs) {
           artifactid
         });
         //write data in file
-        fs.writeFileSync(NDependBaseline, response.data,  "binary",function(err) { });
+        fs.writeFileSync(NDependBaseline, Buffer.from(response.data),  "binary",function(err) { });
         const baselineExtractedFolder = await tc.extractZip(NDependBaseline, _getTempDirectory()+'/NDependBaseLine');
        
       }
