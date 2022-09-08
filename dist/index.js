@@ -117,11 +117,11 @@ for (const runkey in runs.data.workflow_runs) {
       {
         core.info("artifact found");
   
-        var artifactId=artifact.id;
+        var artifactid=artifact.id;
         response  = await octokit.request("Get /repos/{owner}/{repo}/actions/artifacts/{artifactid}/zip", {
           owner,
           repo,
-          artifactId
+          artifactid
         });
         //write data in file
         fs.writeFileSync(NDependBaseline, response.data,  "binary",function(err) { });
