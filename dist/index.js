@@ -121,7 +121,7 @@ const configPath = core.getInput('customconfig');
 //get ndepend and extract it
 const ndependToolURL = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
 const ndependExtractedFolder = await tc.extractZip(ndependToolURL, _getTempDirectory()+'/NDepend');
-const NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe"
+var NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe"
 const licenseFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependGitHubActionProLicense.xml"
 const configFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependConfig.ndproj"
 const baseLineDir=_getTempDirectory()+'/NDependBaseLine';
@@ -196,7 +196,17 @@ if(baselineFound)
 if(stopifQGfailed)
   args.push("/stopBuild");
 
-ret=await exec.exec(NDependParser, args);
+var isLinux = process.platform === "linux";
+if(isLinux)
+{
+   
+  var NDependLinuxParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/net5.0/GitHubActionAnalyzer.MultiOS.dll";
+  args.unshift(NDependLinuxParser);
+  ret=await exec.exec("dotnet", args);
+}
+else
+  ret=await exec.exec(NDependParser, args);
+
 
 if(ret<0 && stopifQGfailed)
   core.setFailed("NDepend tool exit with error status.");
