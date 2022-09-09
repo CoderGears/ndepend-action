@@ -1,19 +1,19 @@
 name: 'NDepend'
 description: 'NDepend parser'
 inputs:
-  NDependLicense:  # id of input
+  license:  # id of input
     description: 'NDepend license file'
     required: true
     default: ''
-  Baseline:  # id of input
+  baseline:  # id of input
     description: 'NDepend baseline'
     required: false
     default: ''
-  StopIfQGFailed:  # id of input
+  stopIfQGFailed:  # id of input
     description: 'Stop if at least one quality gate failed'
     required: false
     default: false
-  NDependConfigFile:  # id of input
+  customconfig:  # id of input
     description: 'Custom NDepend configuration file'
     required: false
     default: ''

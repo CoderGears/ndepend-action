@@ -37,7 +37,6 @@ function populateSolutions(dir) {
 }
 function getNDependResult(ndependFolder) {
 
-  //console.log('Starting from dir '+startPath+'/');
 
   if (!fs.existsSync(ndependFolder)) {
       
@@ -61,8 +60,33 @@ function _getTempDirectory() {
   const tempDirectory = process.env['RUNNER_TEMP'] ;
   return tempDirectory;
 }
+async function checkIfNDependExists(owner,repo,runid)
+{
+  const artifacts  = await octokit.request("Get /repos/{owner}/{repo}/actions/runs/{runid}/artifacts", {
+    owner,
+    repo,
+    runid
+  });
+  for (const artifactKey in artifacts.data.artifacts) {
+    const artifact=artifacts.data.artifacts[artifactKey];
+    if(artifact.name=="ndepend")
+    {
+      core.info("artifact found");
 
-// most @actions toolkit packages have async methods
+      var artifactid=artifact.id;
+      response  = await octokit.request("Get /repos/{owner}/{repo}/actions/artifacts/{artifactid}/zip", {
+        owner,
+        repo,
+        artifactid
+      });
+      
+      fs.writeFileSync(NDependBaseline, Buffer.from(response.data),  "binary",function(err) { });
+      const baselineExtractedFolder = await tc.extractZip(NDependBaseline, baseLineDir);
+      return true;
+    }
+  }
+}
+
 async function run() {
   try {
     
@@ -72,36 +96,24 @@ async function run() {
 const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 const workflowname=process.env.GITHUB_WORKFLOW;
 const workspace=process.env.GITHUB_WORKSPACE;
-//const license=process.env.NDependLicense;
 const token=process.env.GITHUB_TOKEN;
-const license=core.getInput('NDependLicense');
-const baseline=core.getInput('Baseline');
-const stopifQGfailed=core.getInput('StopIfQGFailed');
+const license=core.getInput('license');
+const baseline=core.getInput('baseline');
+const stopifQGfailed=core.getInput('stopIfQGFailed');
 
 core.info(owner);
 
 core.info(repo);
 var branch=process.env.GITHUB_HEAD_REF;
-let rooturl=process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/blob";
-if(branch!="")
-    rooturl=rooturl+"/"+process.env.GITHUB_HEAD_REF
-else
-    rooturl=rooturl+"/main"
+if(branch=="")
+    branch="main";
+let rooturl=process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/blob/"+branch;
 
 core.info(rooturl);
-// get license
-/*const { data } = await octokit.request("Get /repos/{owner}/ndepend2.github.io/contents/license", {
-  headers: {
-    accept: 'application/vnd.github.VERSION.raw',
-  },
-  owner
-  
-  
-});*/
-const configPath = core.getInput('NDependConfigFile');
+const configPath = core.getInput('customconfig');
 //get ndepend and extract it
-const node12Path = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
-const node12ExtractedFolder = await tc.extractZip(node12Path, _getTempDirectory()+'/NDepend');
+const ndependToolURL = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
+const ndependExtractedFolder = await tc.extractZip(ndependToolURL, _getTempDirectory()+'/NDepend');
 const NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe"
 const licenseFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependGitHubActionProLicense.xml"
 const configFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependConfig.ndproj"
@@ -111,27 +123,7 @@ const NDependBaseline=_getTempDirectory()+"/baseline.zip";
 
 //add license file in ndepend install directory
 fs.mkdirSync(NDependOut);
-//fs.writeFileSync(licenseFile, result.data);
 fs.writeFileSync(licenseFile, license);
-//fs.writeFileSync(configFile, config.data);
-
-/*const  config  = await octokit.repos.getContent({
-  owner: owner,
-  repo: repo,
-  path: configPath,
-  headers: {
-    'Accept': 'application/vnd.github.v3.raw'
-  }
-})*/
-// get branch name to use it in any request
-
-//core.info(configPath);
-//get config
-// get all runs /repos/{owner}/{repo}/actions/runs
-// find run id from run number or get latest
-//get specific run artifacts /repos/{owner}/{repo}/actions/runs/{run_id}/artifacts
-//download ndar   /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}
-//curl -H "Accept: application/vnd.github+json" -H "Authorization: Bearer token" https://api.github.com/repos/OWNER/REPO/actions/artifacts/ARTIFACT_ID/zip -o file
  runs  = await octokit.request("Get /repos/{owner}/{repo}/actions/runs", {
   owner,
   repo
@@ -142,54 +134,32 @@ for (const runkey in runs.data.workflow_runs) {
   const run=runs.data.workflow_runs[runkey];
   core.info("run check:"+run.run_number);
   core.info("repository:"+run.repository.name+":"+repo);
-  
-  if (baseline=='recent')
+  if(run.repository.name==repo )
   {
-     
-  }
-  else if(baseline.lastIndexOf('_recent'))
-  {
-
-  }
-  else if(run.run_number.toString()==baseline)
-  {
-    //check if same repository
-    core.info("run found:"+run.id);
     const runid=run.id;
-    const artifacts  = await octokit.request("Get /repos/{owner}/{repo}/actions/runs/{runid}/artifacts", {
-      owner,
-      repo,
-      runid
-    });
-    for (const artifactKey in artifacts.data.artifacts) {
-      const artifact=artifacts.data.artifacts[artifactKey];
-      if(artifact.name=="ndepend")
-      {
-        core.info("artifact found");
-  
-        var artifactid=artifact.id;
-        response  = await octokit.request("Get /repos/{owner}/{repo}/actions/artifacts/{artifactid}/zip", {
-          owner,
-          repo,
-          artifactid
-        });
-        //write data in file
-        fs.writeFileSync(NDependBaseline, Buffer.from(response.data),  "binary",function(err) { });
-        const baselineExtractedFolder = await tc.extractZip(NDependBaseline, baseLineDir);
-        baselineFound=true;
-      }
-    };
-    
+    if (baseline=='recent' && run.head_branch==branch)
+    {
+      //check if ndepend artifact exists
+      baselineFound= await checkIfNDependExists(owner,repo,runid);
+    }
+    else if(baseline.lastIndexOf('_recent'))
+    {
+       var currentBranch=baseline.substring(0,baseline.lastIndexOf('_recent'));
+       if(currentBranch==branch)
+          baselineFound= await checkIfNDependExists(owner,repo,runid);
+    }
+    else if(run.run_number.toString()==baseline)
+    {
+      core.info("run found:"+run.id);
+      
+      baselineFound= await checkIfNDependExists(owner,repo,runid);
+    } 
+    if(baselineFound)
+      break;
+
   }
 };
 
-
-
-//'/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace
-//add these params
-//sourcedir,rooturl,coveragedir,baseline,solutionPath in case of many .sln
-//in case of ndproj not passed, search sln in sourcedir and create new ndepend project
-//in case of many sln founds ask to specify solutionPath from params or from the ndproj file
 var args=['sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl];
 
 if(configPath!="")
@@ -223,15 +193,12 @@ ret=await exec.exec(NDependParser, args);
 
 if(ret<0 && stopifQGfailed)
   core.setFailed("NDepend tool exit with error status.");
+
 const artifactClient = artifact.create()
 const artifactName = 'ndepend';
 
 var files=[];
 const rootDirectory = NDependOut;
-/*fs.readdirSync(rootDirectory).forEach(file => {
-  var fullPath = path.join(rootDirectory, file);
-  files.push(fullPath);
-});*/
 populateArtifacts(NDependOut);
 
 const options = {
