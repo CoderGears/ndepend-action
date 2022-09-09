@@ -198,7 +198,7 @@ var isLinux = process.platform === "linux";
 if(isLinux)
 {
    
-  var NDependLinuxParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe";
+  var NDependLinuxParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/net5.0/GitHubActionAnalyzer.MultiOS.dll";
   args.unshift(NDependLinuxParser);
   ret=await exec.exec("dotnet", args);
 }
