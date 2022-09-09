@@ -147,10 +147,12 @@ fs.writeFileSync(licenseFile, license);
 var baselineFound=false;
 for (const runkey in runs.data.workflow_runs) {
   const run=runs.data.workflow_runs[runkey];
-  core.info("run check:"+run.id);
+  core.info("run check:"+run.run_number);
+  core.info("repository:"+run.repository.name+":"+repo);
+  
   if (baseline=='recent')
   {
-
+     
   }
   else if(baseline.lastIndexOf('_recent'))
   {
