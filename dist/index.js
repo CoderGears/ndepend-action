@@ -15,14 +15,30 @@ const artifact = __nccwpck_require__(2605);
 fs = __nccwpck_require__(5747);
 path = __nccwpck_require__(5622);
 const artifactFiles=[];
-function traverseDir(dir) {
+const solutions=[];
+
+function populateArtifacts(dir) {
   fs.readdirSync(dir).forEach(file => {
     let fullPath = path.join(dir, file);
     if (fs.lstatSync(fullPath).isDirectory()) {
        
-       traverseDir(fullPath);
+      populateArtifacts(fullPath);
      } else {
       artifactFiles.push(fullPath);
+     }  
+  });
+}
+function populateSolutions(dir) {
+  fs.readdirSync(dir).forEach(file => {
+    let fullPath = path.join(dir, file);
+    if (fs.lstatSync(fullPath).isDirectory()) {
+       
+      populateArtifacts(fullPath);
+     } else {
+      if (fullPath.endsWith(".sln")) {
+        solutions.push(fullPath);
+       }
+      
      }  
   });
 }
@@ -67,6 +83,8 @@ const workspace=process.env.GITHUB_WORKSPACE;
 const token=process.env.GITHUB_TOKEN;
 const license=core.getInput('NDependLicense');
 const baseline=core.getInput('Baseline');
+const stopifQGfailed=core.getInput('StopIfQGFailed');
+
 core.info(owner);
 
 core.info(repo);
@@ -74,6 +92,9 @@ var branch=process.env.GITHUB_HEAD_REF;
 const rooturl=process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/blob";
 if(branch!="")
     rooturl=rooturl+"/"+process.env.GITHUB_HEAD_REF
+else
+    rooturl=rooturl+"/main"
+
 core.info(rooturl);
 // get license
 /*const { data } = await octokit.request("Get /repos/{owner}/ndepend2.github.io/contents/license", {
@@ -165,7 +186,25 @@ for (const runkey in runs.data.workflow_runs) {
 //sourcedir,rooturl,coveragedir,baseline,solutionPath in case of many .sln
 //in case of ndproj not passed, search sln in sourcedir and create new ndepend project
 //in case of many sln founds ask to specify solutionPath from params or from the ndproj file
-var args=[ '/ndependProject',workspace+"/"+configPath, '/outputDirectory',NDependOut];
+var args=['sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl];
+
+if(configPath!="")
+{
+  //test in configpath exists else show message
+  args.push("/ndependProject");
+  args.push(workspace+"/"+configPath);
+  
+}
+else
+{
+   populateSolutions(workspace);
+   if(len(solutions)==1)
+   {
+    args.push("/solutionPath");
+    args.push(solutions[0]);
+  
+   }
+}
 if(baselineFound)
 {
   const ndependResultFile=getNDependResult(baseLineDir);
@@ -173,9 +212,13 @@ if(baselineFound)
   args.push("/oldndependProject");
   args.push(ndependResultFile);
 }
+if(stopifQGfailed)
+  args.push("/stopBuild");
 
-await exec.exec(NDependParser, args);
+ret=await exec.exec(NDependParser, args);
 
+if(ret<0 && stopifQGfailed)
+  core.setFailed("NDepend tool exit with error status.");
 const artifactClient = artifact.create()
 const artifactName = 'ndepend';
 
@@ -185,7 +228,7 @@ const rootDirectory = NDependOut;
   var fullPath = path.join(rootDirectory, file);
   files.push(fullPath);
 });*/
-traverseDir(NDependOut);
+populateArtifacts(NDependOut);
 
 const options = {
     continueOnError: true
