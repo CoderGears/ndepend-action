@@ -82,7 +82,7 @@ core.info(owner);
 
 core.info(repo);
 var branch=process.env.GITHUB_HEAD_REF;
-const rooturl=process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/blob";
+let rooturl=process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/blob";
 if(branch!="")
     rooturl=rooturl+"/"+process.env.GITHUB_HEAD_REF
 else
