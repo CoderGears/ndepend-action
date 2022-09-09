@@ -140,9 +140,18 @@ fs.writeFileSync(licenseFile, license);
 var baselineFound=false;
 for (const runkey in runs.data.workflow_runs) {
   const run=runs.data.workflow_runs[runkey];
-
-  if(run.run_number.toString()==baseline)
+  core.info("run check:"+run.id);
+  if (baseline=='recent')
   {
+
+  }
+  else if(baseline.lastIndexOf('_recent'))
+  {
+
+  }
+  else if(run.run_number.toString()==baseline)
+  {
+    //check if same repository
     core.info("run found:"+run.id);
     const runid=run.id;
     const artifacts  = await octokit.request("Get /repos/{owner}/{repo}/actions/runs/{runid}/artifacts", {
