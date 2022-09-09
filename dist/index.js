@@ -168,7 +168,7 @@ for (const runkey in runs.data.workflow_runs) {
 var args=[ '/ndependProject',workspace+"/"+configPath, '/outputDirectory',NDependOut];
 if(baselineFound)
 {
-  const ndependResultFile=getNDependResult(NDependBaseline);
+  const ndependResultFile=getNDependResult(baseLineDir);
   core.info("baseline path:"+ndependResultFile);
   args.push("/oldndependProject");
   args.push(ndependResultFile);
