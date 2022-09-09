@@ -43,7 +43,7 @@ function getNDependResult(ndependFolder) {
       if (stat.isDirectory()) {
           
       } else if (filename.endsWith(".ndar")) {
-          return fullPath;
+          return filename;
       };
   };
 return "";
