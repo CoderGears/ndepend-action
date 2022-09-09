@@ -139,8 +139,6 @@ fs.writeFileSync(licenseFile, license);
 var baselineFound=false;
 for (const runkey in runs.data.workflow_runs) {
   const run=runs.data.workflow_runs[runkey];
-  core.info("run check:"+run.run_number);
-  core.info("repository:"+run.repository.name+":"+repo);
   if(run.repository.name==repo )
   {
     const runid=run.id;
@@ -167,7 +165,7 @@ for (const runkey in runs.data.workflow_runs) {
   }
 };
 
-var args=['sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl];
+var args=['/sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl];
 
 if(configPath!="")
 {
@@ -200,7 +198,7 @@ var isLinux = process.platform === "linux";
 if(isLinux)
 {
    
-  var NDependLinuxParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/net5.0/GitHubActionAnalyzer.MultiOS.dll";
+  var NDependLinuxParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe";
   args.unshift(NDependLinuxParser);
   ret=await exec.exec("dotnet", args);
 }
