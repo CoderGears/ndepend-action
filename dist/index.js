@@ -14,7 +14,7 @@ const artifact = __nccwpck_require__(2605);
 
 fs = __nccwpck_require__(5747);
 path = __nccwpck_require__(5622);
-const artactFiles=[];
+const artifactFiles=[];
 function traverseDir(dir) {
   fs.readdirSync(dir).forEach(file => {
     let fullPath = path.join(dir, file);
@@ -22,9 +22,31 @@ function traverseDir(dir) {
        
        traverseDir(fullPath);
      } else {
-      artactFiles.push(fullPath);
+      artifactFiles.push(fullPath);
      }  
   });
+}
+function getNDependResult(ndependFolder) {
+
+  //console.log('Starting from dir '+startPath+'/');
+
+  if (!fs.existsSync(ndependFolder)) {
+      
+      return "";
+  }
+
+  var files = fs.readdirSync(ndependFolder);
+  for (var i = 0; i < files.length; i++) {
+      var filename = path.join(ndependFolder, files[i]);
+      
+      var stat = fs.lstatSync(filename);
+      if (stat.isDirectory()) {
+          
+      } else if (filename.endsWith(".ndar")) {
+          return fullPath;
+      };
+  };
+return "";
 }
 function _getTempDirectory() {
   const tempDirectory = process.env['RUNNER_TEMP'] ;
@@ -49,7 +71,9 @@ core.info(owner);
 
 core.info(repo);
 var branch=process.env.GITHUB_HEAD_REF;
-const rooturl=process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/blob/"+process.env.GITHUB_HEAD_REF;
+const rooturl=process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/blob";
+if(branch!="")
+    rooturl=rooturl+"/"+process.env.GITHUB_HEAD_REF
 core.info(rooturl);
 // get license
 /*const { data } = await octokit.request("Get /repos/{owner}/ndepend2.github.io/contents/license", {
@@ -67,7 +91,7 @@ const node12ExtractedFolder = await tc.extractZip(node12Path, _getTempDirectory(
 const NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe"
 const licenseFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependGitHubActionProLicense.xml"
 const configFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependConfig.ndproj"
-
+const baseLineDir=_getTempDirectory()+'/NDependBaseLine';
 const NDependOut=_getTempDirectory()+"/NDependOut";
 const NDependBaseline=_getTempDirectory()+"/baseline.zip";
 
@@ -99,6 +123,7 @@ fs.writeFileSync(licenseFile, license);
   repo
   
 });
+var baselineFound=false;
 for (const runkey in runs.data.workflow_runs) {
   const run=runs.data.workflow_runs[runkey];
 
@@ -125,8 +150,8 @@ for (const runkey in runs.data.workflow_runs) {
         });
         //write data in file
         fs.writeFileSync(NDependBaseline, Buffer.from(response.data),  "binary",function(err) { });
-        const baselineExtractedFolder = await tc.extractZip(NDependBaseline, _getTempDirectory()+'/NDependBaseLine');
-       
+        const baselineExtractedFolder = await tc.extractZip(NDependBaseline, baseLineDir);
+        baselineFound=true;
       }
     };
     
@@ -136,7 +161,20 @@ for (const runkey in runs.data.workflow_runs) {
 
 
 //'/outputDirectory', NDependOut,'/additionalOutput',workspace,'/sourceDirectory',workspace
-await exec.exec(NDependParser, [ '/ndependProject',workspace+"/"+configPath, '/outputDirectory',NDependOut]);
+//add these params
+//sourcedir,rooturl,coveragedir,baseline,solutionPath in case of many .sln
+//in case of ndproj not passed, search sln in sourcedir and create new ndepend project
+//in case of many sln founds ask to specify solutionPath from params or from the ndproj file
+var args=[ '/ndependProject',workspace+"/"+configPath, '/outputDirectory',NDependOut];
+if(baselineFound)
+{
+  const ndependResultFile=getNDependResult(NDependBaseline);
+  core.info("baseline path:"+ndependResultFile);
+  args.push("/oldndependProject");
+  args.push(ndependResultFile);
+}
+
+await exec.exec(NDependParser, args);
 
 const artifactClient = artifact.create()
 const artifactName = 'ndepend';
@@ -153,24 +191,11 @@ const options = {
     continueOnError: true
 }
 
-const uploadResult = await artifactClient.uploadArtifact(artifactName, artactFiles, rootDirectory, options)
-//get sln file
-//get baseline build id
-//get baseline ndar if exists from a specific build
-
-//execute ndepend
-
-// add artifacts
+const uploadResult = await artifactClient.uploadArtifact(artifactName, artifactFiles, rootDirectory, options)
 
 
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds6 ...`);
-
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
-    var tempDirectory = process.env['RUNNER_TEMP'] ;
-    core.setOutput('time', new Date().toTimeString());
+   
+   
   } catch (error) {
     core.setFailed(error.message);
   }
