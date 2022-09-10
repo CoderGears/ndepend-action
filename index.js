@@ -1,5 +1,4 @@
 const core = require('@actions/core');
-const wait = require('./wait');
 const { Octokit } = require("@octokit/action");
 const tc = require('@actions/tool-cache');
 const exec = require('@actions/exec');

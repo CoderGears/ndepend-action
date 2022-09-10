@@ -6,7 +6,6 @@ require('./sourcemap-register.js');module.exports =
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
-const wait = __nccwpck_require__(4653);
 const { Octokit } = __nccwpck_require__(1231);
 const tc = __nccwpck_require__(7784);
 const exec = __nccwpck_require__(1514);
@@ -15800,14 +15799,6 @@ function wrappy (fn, cb) {
     return ret
   }
 }
-
-
-/***/ }),
-
-/***/ 4653:
-/***/ ((module) => {
-
-module.exports = eval("require")("./wait");
 
 
 /***/ }),
