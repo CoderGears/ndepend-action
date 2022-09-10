@@ -6,7 +6,7 @@ require('./sourcemap-register.js');module.exports =
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
-const wait = __nccwpck_require__(4258);
+const wait = __nccwpck_require__(4653);
 const { Octokit } = __nccwpck_require__(1231);
 const tc = __nccwpck_require__(7784);
 const exec = __nccwpck_require__(1514);
@@ -107,10 +107,8 @@ const token=process.env.GITHUB_TOKEN;
 const license=core.getInput('license');
 const baseline=core.getInput('baseline');
 const stopifQGfailed=core.getInput('stopIfQGFailed');
+const solution=core.getInput('solution');
 
-core.info(owner);
-
-core.info(repo);
 var branch=process.env.GITHUB_HEAD_REF;
 if(branch=="")
     branch="main";
@@ -118,6 +116,8 @@ let rooturl=process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/bl
 
 core.info(rooturl);
 const configPath = core.getInput('customconfig');
+const coveragePath = core.getInput('coveragefolder');
+
 //get ndepend and extract it
 const ndependToolURL = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
 const ndependExtractedFolder = await tc.extractZip(ndependToolURL, _getTempDirectory()+'/NDepend');
@@ -155,13 +155,14 @@ for (const runkey in runs.data.workflow_runs) {
     }
     else if(run.run_number.toString()==baseline)
     {
-      core.info("run found:"+run.id);
       
       baselineFound= await checkIfNDependExists(owner,repo,runid);
     } 
     if(baselineFound)
+    {
+      core.info("Baseline to compare with has the run number:"+run.run_number)
       break;
-
+    }
   }
 };
 
@@ -177,20 +178,38 @@ if(configPath!="")
 else
 {
    populateSolutions(workspace);
-   if(len(solutions)==1)
+   if(solutions.length==1)
    {
-    args.push("/solutionPath");
-    args.push(solutions[0]);
+      args.push("/solutionPath");
+      args.push(solutions[0]);
+  }
+  else if(solutions.length > 1)
+  {
+    if(solution!='')
+    {
+      args.push("/solutionPath");
+      args.push(workspace+"/"+solution);
   
-   }
+    }
+    else
+      core.setFailed("More than VS solution is found, please specify which one you want to parse from the action inputs")
+  }
+  else if(solutions.length ==0 )
+  {
+    core.setFailed("No VS solution is found in this repository")
+  }
 }
 if(baselineFound)
 {
   const ndependResultFile=getNDependResult(baseLineDir);
-  core.info("baseline path:"+ndependResultFile);
   args.push("/oldndependProject");
   args.push(ndependResultFile);
 }
+if(coveragePath!='')
+  {
+    args.push("/coverageDir");
+    args.push(coveragePath);
+  }
 if(stopifQGfailed)
   args.push("/stopBuild");
 
@@ -15785,19 +15804,10 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
-/***/ 4258:
+/***/ 4653:
 /***/ ((module) => {
 
-let wait = function (milliseconds) {
-  return new Promise((resolve) => {
-    if (typeof milliseconds !== 'number') {
-      throw new Error('milliseconds not a number');
-    }
-    setTimeout(() => resolve("done!"), milliseconds)
-  });
-};
-
-module.exports = wait;
+module.exports = eval("require")("./wait");
 
 
 /***/ }),
