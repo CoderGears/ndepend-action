@@ -70,7 +70,7 @@ async function checkIfNDependExists(owner,repo,runid)
     const artifact=artifacts.data.artifacts[artifactKey];
     if(artifact.name=="ndepend")
     {
-      core.info("artifact found");
+      core.info("artifact found:"+artifactid);
 
       var artifactid=artifact.id;
       response  = await octokit.request("Get /repos/{owner}/{repo}/actions/artifacts/{artifactid}/zip", {
