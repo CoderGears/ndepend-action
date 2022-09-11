@@ -25,7 +25,7 @@ function populateSolutions(dir) {
     let fullPath = path.join(dir, file);
     if (fs.lstatSync(fullPath).isDirectory()) {
        
-      populateArtifacts(fullPath);
+      populateSolutions(fullPath);
      } else {
       if (fullPath.endsWith(".sln")) {
         solutions.push(fullPath);
