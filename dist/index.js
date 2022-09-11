@@ -175,7 +175,7 @@ if(baseline!=''  && !baselineFound)
     
   
 }
-var args=['/sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl];
+var args=['/sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl,'/identifier',repo];
 
 var configfilePath=workspace+"/"+configPath;
   if (!fs.existsSync(configfilePath)) {
