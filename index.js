@@ -93,22 +93,24 @@ async function run() {
       auth: process.env.GITHUB_TOKEN
     })
 const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
-const workflowname=process.env.GITHUB_WORKFLOW;
 const workspace=process.env.GITHUB_WORKSPACE;
-const token=process.env.GITHUB_TOKEN;
 const license=core.getInput('license');
 const baseline=core.getInput('baseline');
 const stopifQGfailed=core.getInput('stopIfQGFailed');
 const solution=core.getInput('solution');
-
+const configPath = core.getInput('customconfig');
+const coveragePath = core.getInput('coveragefolder');
 var branch=process.env.GITHUB_HEAD_REF;
 if(branch=="")
     branch="main";
+
 let rooturl=process.env.GITHUB_SERVER_URL+"/"+process.env.GITHUB_REPOSITORY+"/blob/"+branch;
 
-core.info(rooturl);
-const configPath = core.getInput('customconfig');
-const coveragePath = core.getInput('coveragefolder');
+if(license=='')
+    core.setFailed("The ndepend license is not specified, Please ensure that the license input is present in your workflow.")
+
+if(license!='' && license.indexOf("<NDepend")<0)
+    core.setFailed("The ndepend license is not valid, Please check your license data.")
 
 //get ndepend and extract it
 const ndependToolURL = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
@@ -157,12 +159,27 @@ for (const runkey in runs.data.workflow_runs) {
     }
   }
 };
-
+if(baseline!=''  && !baselineFound)
+{
+    if(baseline.indexOf("recent")<0 && isNaN(baseline))
+        core.warning("The baseline value "+baseline+ " is not valid. Valid values are recent , branch_recent, specific run number");
+    else
+        core.warning("No baseline to compare found for :"+baseline);
+    
+  
+}
 var args=['/sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl];
 
-if(configPath!="")
+var configfilePath=workspace+"/"+configPath;
+  if (!fs.existsSync(configfilePath)) {
+      core.warning("The NDepend custom config file "+configPath+" is not found, a default config file will be used instead.");
+    
+  }
+
+if(configPath!="" && fs.existsSync(configfilePath))
 {
   //test in configpath exists else show message
+  
   args.push("/ndependProject");
   args.push(workspace+"/"+configPath);
   
@@ -184,7 +201,7 @@ else
   
     }
     else
-      core.setFailed("More than VS solution is found, please specify which one you want to parse from the action inputs")
+      core.setFailed("More than VS solution is found in this repository, please specify which one you want to parse from the action inputs")
   }
   else if(solutions.length ==0 )
   {
@@ -202,7 +219,7 @@ if(coveragePath!='')
     args.push("/coverageDir");
     args.push(coveragePath);
   }
-if(stopifQGfailed)
+if(stopifQGfailed=='true')
   args.push("/stopBuild");
 
 var isLinux = process.platform === "linux";
@@ -217,8 +234,6 @@ else
   ret=await exec.exec(NDependParser, args);
 
 
-if(ret<0 && stopifQGfailed)
-  core.setFailed("NDepend tool exit with error status.");
 
 const artifactClient = artifact.create()
 const artifactName = 'ndepend';
@@ -233,6 +248,8 @@ const options = {
 
 const uploadResult = await artifactClient.uploadArtifact(artifactName, artifactFiles, rootDirectory, options)
 
+if(ret<0 && stopifQGfailed=='true')
+  core.setFailed("NDepend tool exit with error status.");
 
    
    
