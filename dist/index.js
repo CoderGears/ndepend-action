@@ -22,9 +22,10 @@ function populateArtifacts(dir,basedir) {
   fs.readdirSync(dir).forEach(file => {
     let fullPath = path.join(dir, file);
     if (fs.lstatSync(fullPath).isDirectory()) {
+      if(path.relative( basedir, fullPath ).indexOf("_")>0  )
           populateArtifacts(fullPath,basedir);
      } else {
-      if(path.relative( basedir, fullPath ).indexOf("_")>0 || file.indexOf(".zip")>0 )
+      if( (dir!=basedir  && path.relative( basedir, fullPath ).indexOf("_")>0) || file.indexOf(".zip")>0 )
       {
          
          artifactFiles.push(fullPath);
