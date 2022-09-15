@@ -14,19 +14,41 @@ const artifact = __nccwpck_require__(2605);
 fs = __nccwpck_require__(5747);
 path = __nccwpck_require__(5622);
 const artifactFiles=[];
+var artifactsRoot="";
+const trendFiles=[];
 const solutions=[];
 
 function populateArtifacts(dir) {
   fs.readdirSync(dir).forEach(file => {
     let fullPath = path.join(dir, file);
     if (fs.lstatSync(fullPath).isDirectory()) {
-       
-      populateArtifacts(fullPath);
+      if(fullPath.indexOf("_")>0)
+          populateArtifacts(fullPath);
      } else {
-      artifactFiles.push(fullPath);
-     }  
+      if(fullPath.indexOf("_")>0)
+      {
+        if(artifactsRoot=="")
+            artifactsRoot=dir;
+         artifactFiles.push(fullPath);
+      }
+     }
+    
   });
 }
+function populateTrends(dir) {
+  fs.readdirSync(dir).forEach(file => {
+    let fullPath = path.join(dir, file);
+    if (fs.lstatSync(fullPath).isDirectory()) {
+      if(fullPath.indexOf("TrendMetrics")>0)
+          populateTrends(fullPath);
+     } else {
+      if(fullPath.indexOf("TrendMetrics")>0)
+         trendFiles.push(fullPath);
+     }
+    
+  });
+}
+
 function populateSolutions(dir) {
   fs.readdirSync(dir).forEach(file => {
     let fullPath = path.join(dir, file);
@@ -208,7 +230,7 @@ else
   
     }
     else
-      core.setFailed("More than VS solution is found in this repository, please specify which one you want to parse from the action inputs")
+      core.setFailed("More than one VS solution is found in this repository, please specify which one you want to parse from the action inputs")
   }
   else if(solutions.length ==0 )
   {
@@ -248,12 +270,23 @@ const artifactName = 'ndepend';
 var files=[];
 const rootDirectory = NDependOut;
 populateArtifacts(NDependOut);
+populateTrends(NDependOut);
+
 
 const options = {
     continueOnError: true
 }
 
-const uploadResult = await artifactClient.uploadArtifact(artifactName, artifactFiles, rootDirectory, options)
+if (fs.existsSync(configfilePath)) 
+{
+    fs.copyFileSync(configfilePath, artifactsRoot+"/project.ndproj");
+  
+    artifactFiles.push(artifactsRoot+"/project.ndproj");
+}
+
+const uploadResult = await artifactClient.uploadArtifact(artifactName, artifactFiles, artifactsRoot, options)
+if(trendFiles.length>0)
+   await artifactClient.uploadArtifact("ndependtrend", trendFiles, NDependOut+"/TrendMetrics", options)
 
 if(ret<0 && stopifQGfailed=='true')
   core.setFailed("NDepend tool exit with error status.");
