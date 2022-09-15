@@ -22,6 +22,7 @@ function populateArtifacts(dir) {
       {
         if(artifactsRoot=="")
             artifactsRoot=dir;
+         core.info("add artifact:"+ fullPath);
          artifactFiles.push(fullPath);
       }
      }
