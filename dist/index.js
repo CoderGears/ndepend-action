@@ -25,7 +25,7 @@ function populateArtifacts(dir,basedir) {
       if(path.relative( basedir, fullPath ).indexOf("_")>0  )
           populateArtifacts(fullPath,basedir);
      } else {
-      if( (dir!=basedir  && path.relative( basedir, fullPath ).indexOf("_")>0) || file.indexOf(".zip")>0 )
+      if( (dir!=basedir  && path.relative( basedir, fullPath ).indexOf("_")>0) )
       {
          
          artifactFiles.push(fullPath);
