@@ -277,9 +277,9 @@ const options = {
 
 if (configPath!="" &&  fs.existsSync(configfilePath) && configfilePath.indexOf(".ndproj")>0) 
 {
-    fs.copyFileSync(configfilePath, artifactsRoot+"/project.ndproj");
+    fs.copyFileSync(configfilePath, NDependOut+"/project.ndproj");
   
-    artifactFiles.push(artifactsRoot+"/project.ndproj");
+    artifactFiles.push(NDependOut+"/project.ndproj");
 }
 
 const uploadResult = await artifactClient.uploadArtifact(artifactName, artifactFiles, NDependOut, options)
