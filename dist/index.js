@@ -18,18 +18,15 @@ var artifactsRoot="";
 const trendFiles=[];
 const solutions=[];
 
-function populateArtifacts(dir) {
+function populateArtifacts(dir,basedir) {
   fs.readdirSync(dir).forEach(file => {
     let fullPath = path.join(dir, file);
     if (fs.lstatSync(fullPath).isDirectory()) {
-      if(fullPath.indexOf("_")>0)
-          populateArtifacts(fullPath);
+          populateArtifacts(fullPath,basedir);
      } else {
-      if(fullPath.indexOf("_")>0)
+      if(path.relative( basedir, fullPath ).indexOf("_")>0 || file.indexOf(".zip")>0 )
       {
-        if(artifactsRoot=="")
-            artifactsRoot=dir;
-         core.info("add artifact:"+ fullPath);
+         
          artifactFiles.push(fullPath);
       }
      }
@@ -270,7 +267,7 @@ const artifactName = 'ndepend';
 
 var files=[];
 const rootDirectory = NDependOut;
-populateArtifacts(NDependOut);
+populateArtifacts(NDependOut,NDependOut);
 populateTrends(NDependOut);
 
 
@@ -285,7 +282,7 @@ if (configPath!="" &&  fs.existsSync(configfilePath) && configfilePath.indexOf("
     artifactFiles.push(artifactsRoot+"/project.ndproj");
 }
 
-const uploadResult = await artifactClient.uploadArtifact(artifactName, artifactFiles, artifactsRoot, options)
+const uploadResult = await artifactClient.uploadArtifact(artifactName, artifactFiles, NDependOut, options)
 if(trendFiles.length>0)
    await artifactClient.uploadArtifact("ndependtrend", trendFiles, NDependOut+"/TrendMetrics", options)
 
