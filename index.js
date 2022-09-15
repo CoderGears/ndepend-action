@@ -270,7 +270,7 @@ const options = {
     continueOnError: true
 }
 
-if (fs.existsSync(configfilePath)) 
+if (configPath!="" &&  fs.existsSync(configfilePath) && configfilePath.indexOf(".ndproj")>0) 
 {
     fs.copyFileSync(configfilePath, artifactsRoot+"/project.ndproj");
   
