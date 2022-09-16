@@ -114,6 +114,7 @@ async function run() {
       auth: process.env.GITHUB_TOKEN
     })
 const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
+const currentRunNumber=process.env.GITHUB_RUN_NUMBER;
 const workspace=process.env.GITHUB_WORKSPACE;
 const license=core.getInput('license');
 const baseline=core.getInput('baseline');
@@ -189,7 +190,7 @@ if(baseline!=''  && !baselineFound)
     
   
 }
-var args=['/sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl,'/identifier',repo];
+var args=['/sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl,'/identifier',repo,'/buildId',currentRunNumber];
 
 var configfilePath=workspace+"/"+configPath;
   if (!fs.existsSync(configfilePath)) {
