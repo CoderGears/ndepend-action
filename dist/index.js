@@ -87,7 +87,7 @@ function _getTempDirectory() {
   const tempDirectory = process.env['RUNNER_TEMP'] ;
   return tempDirectory;
 }
-async function checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline)
+async function checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline,baseLineDir)
 {
   const artifacts  = await octokit.request("Get /repos/{owner}/{repo}/actions/runs/{runid}/artifacts", {
     owner,
@@ -168,18 +168,18 @@ for (const runkey in runs.data.workflow_runs) {
     if (baseline=='recent' && run.head_branch==branch)
     {
       //check if ndepend artifact exists
-      baselineFound= await checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline);
+      baselineFound= await checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline,baseLineDir);
     }
     else if(baseline.lastIndexOf('_recent'))
     {
        var currentBranch=baseline.substring(0,baseline.lastIndexOf('_recent'));
        if(currentBranch==branch)
-          baselineFound= await checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline);
+          baselineFound= await checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline,baseLineDir);
     }
     else if(run.run_number.toString()==baseline)
     {
       
-      baselineFound= await checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline);
+      baselineFound= await checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline,baseLineDir);
     } 
     if(baselineFound)
     {
