@@ -197,7 +197,7 @@ if(baseline!=''  && !baselineFound)
     
   
 }
-var args=['/sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl,'/identifier',repo,'/buildId',currentRunNumber];
+var args=['/sourceDirectory',workspace,'/outputDirectory',NDependOut,'/githubRootUrl',rooturl,'/account',owner,'/identifier',repo,'/buildId',currentRunNumber];
 
 var configfilePath=workspace+"/"+configPath;
   if (!fs.existsSync(configfilePath)) {
@@ -277,9 +277,15 @@ const options = {
     continueOnError: true
 }
 
-if (configPath!="" &&  fs.existsSync(configfilePath) && configfilePath.indexOf(".ndproj")>0) 
+/*if (configPath!="" &&  fs.existsSync(configfilePath) && configfilePath.indexOf(".ndproj")>0) 
 {
     fs.copyFileSync(configfilePath, NDependOut+"/project.ndproj");
+  
+    artifactFiles.push(NDependOut+"/project.ndproj");
+}*/
+if ( fs.existsSync(NDependOut+"/project.ndproj") ) 
+{
+    
   
     artifactFiles.push(NDependOut+"/project.ndproj");
 }
