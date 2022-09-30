@@ -281,6 +281,7 @@ if (baselineFound  )
 {
     var baselineDir=NDependOut+"/Baseline";
     var baselinePath= baselineDir+"/"+path.basename(ndependResultFile);
+    core.info(ndependResultFile);
     core.info(baselinePath);
     fs.mkdirSync(baselineDir);
     fs.copyFileSync(ndependResultFile, baselinePath);
