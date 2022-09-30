@@ -98,9 +98,10 @@ async function checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline,bas
     const artifact=artifacts.data.artifacts[artifactKey];
     if(artifact.name=="ndepend")
     {
+      
+      var artifactid=artifact.id;
       core.info("artifact found:"+artifactid);
 
-      var artifactid=artifact.id;
       response  = await octokit.request("Get /repos/{owner}/{repo}/actions/artifacts/{artifactid}/zip", {
         owner,
         repo,
@@ -275,6 +276,15 @@ populateTrends(NDependOut);
 
 const options = {
     continueOnError: true
+}
+if (baselineFound  ) 
+{
+    var baselineDir=NDependOut+"/Baseline";
+    var baselinePath= baselineDir+"/"+path.basename(ndependResultFile);
+    fs.mkdirSync(baselineDir);
+    fs.copyFileSync(ndependResultFile, baselinePath);
+  
+    artifactFiles.push(baselinePath);
 }
 
 /*if (configPath!="" &&  fs.existsSync(configfilePath) && configfilePath.indexOf(".ndproj")>0) 
