@@ -238,9 +238,9 @@ else
     core.setFailed("No VS solution is found in this repository")
   }
 }
+const ndependResultFile=getNDependResult(baseLineDir);
 if(baselineFound)
 {
-  const ndependResultFile=getNDependResult(baseLineDir);
   args.push("/oldndependProject");
   args.push(ndependResultFile);
 }
