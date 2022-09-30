@@ -62,10 +62,11 @@ function getNDependResult(ndependFolder) {
       
       return "";
   }
-
+  core.info(ndependFolder);
   var files = fs.readdirSync(ndependFolder);
   for (var i = 0; i < files.length; i++) {
       var filename = path.join(ndependFolder, files[i]);
+      core.info(filename);
       
       var stat = fs.lstatSync(filename);
       if (stat.isDirectory()) {
@@ -164,7 +165,7 @@ for (const runkey in runs.data.workflow_runs) {
       //check if ndepend artifact exists
       baselineFound= await checkIfNDependExists(owner,repo,runid,octokit,NDependBaseline,baseLineDir);
     }
-    else if(baseline.lastIndexOf('_recent'))
+    else if(baseline.lastIndexOf('_recent')>0)
     {
        var currentBranch=baseline.substring(0,baseline.lastIndexOf('_recent'));
        if(currentBranch==branch)
