@@ -67,13 +67,14 @@ function getNDependResult(ndependFolder) {
   var files = fs.readdirSync(ndependFolder);
   for (var i = 0; i < files.length; i++) {
       var filename = path.join(ndependFolder, files[i]);
-      core.info(filename);
+      
       
       var stat = fs.lstatSync(filename);
       if (stat.isDirectory()) {
         if(path.basename(filename)!="Baseline")
           getNDependResult(filename);
       } else if (filename.endsWith(".ndar")) {
+         core.info(filename);
          ndependResultFile= filename;
          return;
       };
