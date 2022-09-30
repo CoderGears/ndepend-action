@@ -55,12 +55,13 @@ function populateSolutions(dir) {
      }  
   });
 }
+const ndependResultFile="";
 function getNDependResult(ndependFolder) {
 
 
   if (!fs.existsSync(ndependFolder)) {
       
-      return "";
+      return ;
   }
   core.info(ndependFolder);
   var files = fs.readdirSync(ndependFolder);
@@ -70,12 +71,14 @@ function getNDependResult(ndependFolder) {
       
       var stat = fs.lstatSync(filename);
       if (stat.isDirectory()) {
-          
+        if(filename.indexOf("Baseline")<0)
+          getNDependResult(filename);
       } else if (filename.endsWith(".ndar")) {
-          return filename;
+         ndependResultFile= filename;
+         return;
       };
   };
-return "";
+
 }
 function _getTempDirectory() {
   const tempDirectory = process.env['RUNNER_TEMP'] ;
@@ -232,8 +235,8 @@ else
     core.setFailed("No VS solution is found in this repository")
   }
 }
-const ndependResultFile=getNDependResult(baseLineDir);
-if(baselineFound)
+getNDependResult(baseLineDir);
+if(baselineFound && baselineFound!=""  && fs.existsSync(baselineFound))
 {
   args.push("/oldndependProject");
   args.push(ndependResultFile);
@@ -271,7 +274,7 @@ populateTrends(NDependOut);
 const options = {
     continueOnError: true
 }
-if (baselineFound  ) 
+if(baselineFound && baselineFound!=""  && fs.existsSync(baselineFound))
 {
     var baselineDir=NDependOut+"/Baseline";
     var baselinePath= baselineDir+"/"+path.basename(ndependResultFile);
