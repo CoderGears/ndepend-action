@@ -71,7 +71,7 @@ function getNDependResult(ndependFolder) {
       
       var stat = fs.lstatSync(filename);
       if (stat.isDirectory()) {
-        if(filename.indexOf("Baseline")<0)
+        if(path.basename(filename)!="Baseline")
           getNDependResult(filename);
       } else if (filename.endsWith(".ndar")) {
          ndependResultFile= filename;
