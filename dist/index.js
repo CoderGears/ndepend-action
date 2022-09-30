@@ -62,7 +62,7 @@ function populateSolutions(dir) {
      }  
   });
 }
-const ndependResultFile="";
+var ndependResultFile="";
 function getNDependResult(ndependFolder) {
 
 
