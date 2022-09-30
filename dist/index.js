@@ -244,7 +244,7 @@ else
   }
 }
 getNDependResult(baseLineDir);
-if(baselineFound && baselineFound!=""  && fs.existsSync(baselineFound))
+if(baselineFound && ndependResultFile!=""  && fs.existsSync(ndependResultFile))
 {
   args.push("/oldndependProject");
   args.push(ndependResultFile);
@@ -282,7 +282,7 @@ populateTrends(NDependOut);
 const options = {
     continueOnError: true
 }
-if(baselineFound && baselineFound!=""  && fs.existsSync(baselineFound))
+if(baselineFound && ndependResultFile!=""  && fs.existsSync(ndependResultFile))
 {
     var baselineDir=NDependOut+"/Baseline";
     var baselinePath= baselineDir+"/"+path.basename(ndependResultFile);
