@@ -340,7 +340,7 @@ if(trendFiles.length>0)
         }
       }
     */
-      message=message+'\nTo have more details about the analysis you can [Download the detailled report]("https://github.com/'+owner+'/'+repo+'/actions/runs/'+currentRunID+'#artifacts")';
+      message=message+'\nTo have more details about the analysis you can Download the detailled report here ("https://github.com/'+owner+'/'+repo+'/actions/runs/'+currentRunID+'#artifacts")';
     
     
        const new_comment = octokit.issues.createComment({
