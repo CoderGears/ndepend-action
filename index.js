@@ -3,6 +3,7 @@ const { Octokit } = require("@octokit/action");
 const tc = require('@actions/tool-cache');
 const exec = require('@actions/exec');
 const artifact = require('@actions/artifact');
+const github = require('@actions/github');
 
 fs = require('fs');
 path = require('path');
@@ -256,7 +257,7 @@ var isLinux = process.platform === "linux";
 if(isLinux)
 {
    
-  var NDependLinuxParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/net5.0/GitHubActionAnalyzer.MultiOS.dll";
+  var NDependLinuxParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/net6.0/GitHubActionAnalyzer.MultiOS.dll";
   args.unshift(NDependLinuxParser);
   ret=await exec.exec("dotnet", args);
 }
@@ -273,10 +274,21 @@ const rootDirectory = NDependOut;
 populateArtifacts(NDependOut,NDependOut);
 populateTrends(NDependOut);
 
+const context = github.context;
+    if (context.payload.pull_request != null) {
+     const pull_request_number = context.payload.pull_request.number;
 
+    var message="test message";
+    const new_comment = octokit.issues.createComment({
+        owner,repo,
+        issue_number: pull_request_number,
+        body: message
+      });
+    }
 const options = {
     continueOnError: true
 }
+
 /*
 if(baselineFound && ndependResultFile!=""  && fs.existsSync(ndependResultFile))
 {
@@ -288,8 +300,8 @@ if(baselineFound && ndependResultFile!=""  && fs.existsSync(ndependResultFile))
     fs.copyFileSync(ndependResultFile, baselinePath);
   
     artifactFiles.push(baselinePath);
-}*/
-
+}
+*/
 /*if (configPath!="" &&  fs.existsSync(configfilePath) && configfilePath.indexOf(".ndproj")>0) 
 {
     fs.copyFileSync(configfilePath, NDependOut+"/project.ndproj");
