@@ -285,12 +285,16 @@ const context = github.context;
     if (context.payload.pull_request != null) {
      const pull_request_number = context.payload.pull_request.number;
 
-    var message="test message";
-    const new_comment = octokit.issues.createComment({
-        owner,repo,
-        issue_number: pull_request_number,
-        body: message
-      });
+    
+    if(fs.existsSync(NDependOut+"/comment.txt"))
+    {
+        const message = readFileSync(NDependOut+"/comment.txt");
+        const new_comment = octokit.issues.createComment({
+            owner,repo,
+            issue_number: pull_request_number,
+            body: message
+          });
+    }
     }
 const options = {
     continueOnError: true
