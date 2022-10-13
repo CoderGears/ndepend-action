@@ -317,8 +317,8 @@ if(trendFiles.length>0)
    
    if(fs.existsSync(NDependOut+"/comment.txt"))
    {
-       const message = fs.readFileSync(NDependOut+"/comment.txt").toString();
-    
+       var message = fs.readFileSync(NDependOut+"/comment.txt").toString();
+    /*
        var artifacts  = await octokit.request("Get /repos/{owner}/{repo}/actions/runs/{currentRunID}/artifacts", {
         owner,
         repo,
@@ -332,7 +332,8 @@ if(trendFiles.length>0)
           message=message+"\n[Download Detailled Report]("+ artifact.archive_download_url+")";
         }
       }
-    
+    */
+      message=message+'\nTo have more details about the analysis you can [Download the detailled report]("https://github.com/'+owner+'/'+repo+'/actions/runs/'+currentRunID+'#artifacts"';
     
     
        const new_comment = octokit.issues.createComment({
