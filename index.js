@@ -281,7 +281,7 @@ const context = github.context;
     
     if(fs.existsSync(NDependOut+"/comment.txt"))
     {
-        const message = fs.readFileSync(NDependOut+"/comment.txt");
+        const message = fs.readFileSync(NDependOut+"/comment.txt").toString();
         const new_comment = octokit.issues.createComment({
             owner,repo,
             issue_number: pull_request_number,
