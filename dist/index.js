@@ -151,7 +151,7 @@ if(license!='' && license.indexOf("<NDepend")<0)
     core.setFailed("The ndepend license is not valid, Please check your license data.")
 
 //get ndepend and extract it
-const ndependToolURL = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer.zip');
+const ndependToolURL = await tc.downloadTool('https://www.codergears.com/protected/GitHubActionAnalyzer3.zip');
 const ndependExtractedFolder = await tc.extractZip(ndependToolURL, _getTempDirectory()+'/NDepend');
 var NDependParser=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/GitHubActionAnalyzer.exe"
 const licenseFile=_getTempDirectory()+"/NDepend/GitHubActionAnalyzer/NDependGitHubActionProLicense.xml"
